@@ -18,21 +18,26 @@ server.get('/api/users', (req, res) => {
 
     .catch(err => {
         res.status(500).json({ message: "The users information could not be retrieved." })
+    
     }) 
 })
 
 server.get('/api/users/:id', (req, res) => {
+
     let {id} = req.params
     database.findById(id)
     .then(user => { 
         if(user) {
             res.status(200).json(user)
-        } else {
+        } 
+        
+        else {
             res.status(404).json({ message: "The user with the specified ID does not exist." })
         } 
 
     }).catch(err => {
         res.status(500).json({ message:"The users information could not be retrieved." })
+    
     })
 })
 
@@ -44,12 +49,16 @@ server.post('/api/users', (req, res) => {
 
         if (users) {
             res.status(201).json(users)
-        } else {
+        } 
+        
+        else {
             res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
         }     
     })
+
     .catch(err => { 
         res.status(500).json({ error: "There was an error while saving the user to the database" })
+    
     })
 })
 
@@ -60,12 +69,39 @@ server.delete('/api/users/:id', (req, res) => {
     .then(users => {
         if (users) {
             res.json(users)
-        } else {
+        } 
+        
+        else {
             res.status(404).json({ message: "The user with the specified ID does not exist." })
         }
     })
+
     .catch(err => {
         res.status(400).json({ errorMessage: "ERROR. This user could not be removed." })     
+    
+    })
+})
+
+server.put('/api/users/:id', (req, res) => {
+    const { id } = req.params
+    const { name, bio } = req.body
+    console.log(id, name, bio)
+
+    if (!name || !bio) {
+        res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
+    }
+    database.update(id, req.body)
+    .then(user=> {
+        if (user) {
+            res.status(200).json(req.body)
+            } 
+            
+        else {   
+            res.status(404).json({ message: "The user with the specified ID does not exist." })
+        }
+    }) 
+    .catch(err => {
+        res.status(500).json({ error: "The user information could not be modified." })
     })
 })
 
